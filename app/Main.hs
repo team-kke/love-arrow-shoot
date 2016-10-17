@@ -1,6 +1,10 @@
 module Main where
 
-import Lib
+import Config (getPort)
+import Network.Wai.Handler.Warp (run)
+import Server (server)
 
 main :: IO ()
-main = someFunc
+main = do
+  port <- getPort
+  run port server
