@@ -1,0 +1,4 @@
+# A sample config
+
+# Port number to listen to
+port: 3000

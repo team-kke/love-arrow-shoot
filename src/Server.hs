@@ -6,7 +6,5 @@ import Network.HTTP.Types
 import Network.Wai
 
 server :: Application
-server req respond = do
-  putStrLn "Allocating scarce resource"
-  putStrLn "Cleaning up"
+server req respond =
   respond $ responseLBS status200 [] "Hello World"
