@@ -7,4 +7,5 @@ import Server (server)
 main :: IO ()
 main = do
   port <- getPort
+  putStrLn $ "listen on http://0.0.0.0:" ++ show port
   run port server
