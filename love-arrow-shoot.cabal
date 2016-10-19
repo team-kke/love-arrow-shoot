@@ -24,6 +24,7 @@ library
                      , yaml
                      , http-types
                      , optparse-applicative
+                     , wai-routing
   default-language:    Haskell2010
 
 executable love-arrow-shoot
