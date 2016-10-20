@@ -2,3 +2,7 @@
 
 # Port number to listen to
 port: 3000
+
+# Basic auth for __setting__ access
+username: "test"
+password: "pass"
