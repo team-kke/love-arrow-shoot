@@ -21,9 +21,7 @@ staticHandler dir = staticApp
 auth :: Middleware
 auth = basicAuth checkCredentials "My Realm"
   where
-    checkCredentials u p = do
-      (username, password) <- getAuth
-      return $ u == username && p == password
+    checkCredentials username password = ((username, password) ==) <$> getAuth
 
 server :: Application
 server req f =
