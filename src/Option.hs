@@ -1,10 +1,12 @@
 module Option
   ( config
+  , static
   ) where
 
 import Options.Applicative hiding (option)
 
 data Option = Option { config' :: FilePath
+                     , static' :: FilePath
                      }
 
 parser :: Parser Option
@@ -13,6 +15,11 @@ parser = Option
                       <> short 'c'
                       <> metavar "FILE"
                       <> help "Config file"
+                       )
+         <*> strOption ( long "static"
+                      <> short 's'
+                      <> metavar "DIR"
+                      <> help "Directory to static files"
                        )
 
 option :: IO Option
@@ -23,3 +30,6 @@ option = execParser $
 
 config :: IO FilePath
 config = config' <$> option
+
+static :: IO FilePath
+static = static' <$> option

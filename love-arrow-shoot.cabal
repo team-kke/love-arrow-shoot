@@ -24,9 +24,8 @@ library
                      , yaml
                      , http-types
                      , optparse-applicative
-                     , wai-routing
-                     , wai-predicates
                      , bytestring
+                     , wai-app-static
   default-language:    Haskell2010
 
 executable love-arrow-shoot

@@ -2,20 +2,23 @@
 
 module Server where
 
+import Data.Maybe (fromJust)
 import Network.HTTP.Types
 import Network.Wai
-import Network.Wai.Predicate
-import Network.Wai.Routing
+import Network.Wai.Application.Static
+import Option (static)
+import WaiAppStatic.Types (toPieces)
 import qualified Data.ByteString.Lazy as B
 
-routes :: Routes a IO ()
-routes = do
-  get "/" (continue hello) $ constant "ya"
-  get "/:name" (continue hello) $ capture "name"
-
-hello :: B.ByteString -> IO Response
-hello name = return $
-  responseLBS status200 [] $ B.concat ["hello, ", name]
+staticHandler :: FilePath -> Application
+staticHandler dir = staticApp
+  (defaultWebAppSettings dir) { ssAddTrailingSlash = True
+                              , ssIndices = fromJust $ toPieces ["index.html"]
+                              }
 
 server :: Application
-server = route $ prepare routes
+server req f =
+  case pathInfo req of
+    "__setting__" : sub -> do
+      dir <- static
+      staticHandler dir req { pathInfo = sub } f
