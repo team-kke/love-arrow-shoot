@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+if [ "$1" = "watch" ]; then
+  pulp --watch build -o .pulp-output --src-path purs --to static/main.js
+else
+  pulp $1 --watch -o .pulp-output --src-path purs --to static/main.js
+fi
