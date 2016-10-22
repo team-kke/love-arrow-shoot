@@ -4,6 +4,8 @@ module Server where
 
 import Config (getAuth)
 import Data.Maybe (fromJust)
+import Network.HTTP.Client (newManager, defaultManagerSettings)
+import Network.HTTP.ReverseProxy
 import Network.HTTP.Types
 import Network.Wai
 import Network.Wai.Application.Static
@@ -24,7 +26,7 @@ staticHandler dir = staticApp
                               }
 
 settingAPIServer :: Application
-settingAPIServer req f = undefined
+settingAPIServer req f = undefined -- FIXME
 
 settingServer :: Application
 settingServer req f =
@@ -34,7 +36,17 @@ settingServer req f =
       dir <- static
       auth (staticHandler dir) req { pathInfo = sub } f
 
+proxyRules :: Request -> IO WaiProxyResponse
+proxyRules _ = return $ WPRProxyDest $ ProxyDest "127.0.0.1" 8000 -- FIXME
+
+proxyServer :: Application
+proxyServer req f = do
+  m <- newManager defaultManagerSettings
+  let proxy = waiProxyTo proxyRules defaultOnExc m
+  proxy req f
+
 server :: Application
 server req f =
   case pathInfo req of
     "__setting__" : sub -> auth settingServer req { pathInfo = sub } f
+    _ -> proxyServer req f
