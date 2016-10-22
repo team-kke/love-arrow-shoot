@@ -31,6 +31,14 @@ Configuration:
 $ love-arrow-shoot --help
 ```
 
+PureScript:
+
+```
+$ npm i -g purescript pulp bower
+$ ./pulpw build
+$ ./pulpw watch
+```
+
 ## License
 
 [BSD3](LICENSE)
