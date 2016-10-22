@@ -12,20 +12,29 @@ import Option (static)
 import WaiAppStatic.Types (toPieces)
 import qualified Data.ByteString.Lazy as B
 
+auth :: Middleware
+auth = basicAuth checkCredentials "My Realm"
+  where
+    checkCredentials username password = ((username, password) ==) <$> getAuth
+
 staticHandler :: FilePath -> Application
 staticHandler dir = staticApp
   (defaultWebAppSettings dir) { ssAddTrailingSlash = True
                               , ssIndices = fromJust $ toPieces ["index.html"]
                               }
 
-auth :: Middleware
-auth = basicAuth checkCredentials "My Realm"
-  where
-    checkCredentials username password = ((username, password) ==) <$> getAuth
+settingAPIServer :: Application
+settingAPIServer req f = undefined
+
+settingServer :: Application
+settingServer req f =
+  case pathInfo req of
+    "api" : sub -> settingAPIServer req { pathInfo = sub } f
+    sub -> do
+      dir <- static
+      auth (staticHandler dir) req { pathInfo = sub } f
 
 server :: Application
 server req f =
   case pathInfo req of
-    "__setting__" : sub -> do
-      dir <- static
-      auth (staticHandler dir) req { pathInfo = sub } f
+    "__setting__" : sub -> auth settingServer req { pathInfo = sub } f
