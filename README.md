@@ -11,6 +11,8 @@ UI. It's basically for webhook development where only HTTPS is
 allowed. With love-arrow-shoot, HTTPS requests can be proxied to any
 local HTTP server.
 
+An introduction to love-arrow-shoot can be found in [wiki](https://github.com/team-kke/love-arrow-shoot/wiki/love-arrow-shoot-%E3%81%84%E3%82%8D%E3%81%AF).
+
 *As you may already have noticed, love-arrow-shoot shouldn't be used
 in production for security and performance reason.*
 
