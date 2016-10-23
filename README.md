@@ -34,7 +34,7 @@ $ love-arrow-shoot --help
 PureScript:
 
 ```
-$ npm i -g purescript pulp bower
+$ npm i
 $ ./pulpw build
 $ ./pulpw watch
 ```
