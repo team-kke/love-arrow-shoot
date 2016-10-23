@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
+
+export PATH="./node_modules/.bin:$PATH"
+
 if [ "$1" = "watch" ]; then
-  pulp --watch build -o .pulp-output --src-path purs --to static/main.js
+  pulp --watch browserify -o .pulp-output --src-path purs --to static/main.js
+elif [ "$1" = "build" ]; then
+  pulp browserify -o .pulp-output --src-path purs --to static/main.js
 else
-  pulp $1 --watch -o .pulp-output --src-path purs --to static/main.js
+  pulp $1 -o .pulp-output --src-path purs --to static/main.js
 fi
