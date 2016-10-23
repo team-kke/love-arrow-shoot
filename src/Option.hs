@@ -1,12 +1,14 @@
 module Option
   ( config
   , static
+  , database
   ) where
 
 import Options.Applicative hiding (option)
 
 data Option = Option { config' :: FilePath
                      , static' :: FilePath
+                     , database' :: FilePath
                      }
 
 parser :: Parser Option
@@ -21,6 +23,11 @@ parser = Option
                       <> metavar "DIR"
                       <> help "Directory to static files"
                        )
+         <*> strOption ( long "database"
+                      <> short 'd'
+                      <> metavar "DIR"
+                      <> help "Directory to save acid-state files"
+                       )
 
 option :: IO Option
 option = execParser $
@@ -33,3 +40,6 @@ config = config' <$> option
 
 static :: IO FilePath
 static = static' <$> option
+
+database :: IO FilePath
+database = database' <$> option
