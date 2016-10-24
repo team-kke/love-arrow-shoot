@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Database
   ( addProxy
@@ -15,15 +16,29 @@ import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
 import Data.Acid
 import Data.Acid.Local (createCheckpointAndClose)
+import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.List (sortBy)
 import Data.SafeCopy
 import Data.Text (Text)
+import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 
 data Proxy = Proxy { pathPattern :: Text
                    , proxyHost :: ByteString
                    , proxyPort :: Int
                    } deriving Show
+
+instance ToJSON Proxy where
+  toJSON proxy = object [ "pathPattern" .= pathPattern proxy
+                        , "proxyHost" .= decodeUtf8 (proxyHost proxy)
+                        , "proxyPort" .= proxyPort proxy
+                        ]
+
+instance FromJSON Proxy where
+  parseJSON = withObject "Proxy" $ \obj ->
+    Proxy <$> obj .: "pathPattern"
+          <*> (encodeUtf8 <$> obj .: "proxyHost")
+          <*> obj .: "proxyPort"
 
 type ID = Integer
 
