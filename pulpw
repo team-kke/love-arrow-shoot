@@ -5,7 +5,8 @@ export PATH="./node_modules/.bin:$PATH"
 if [ "$1" = "watch" ]; then
   pulp --watch browserify -o .pulp-output --src-path purs --to static/main.js
 elif [ "$1" = "build" ]; then
-  pulp browserify -o .pulp-output --src-path purs --to static/main.js
+  pulp browserify --optimise -o .pulp-output --src-path purs --to static/main.js
+  uglifyjs static/main.js --compress=warnings=false --mangle -o static/main.js
 else
   pulp $1 -o .pulp-output --src-path purs --to static/main.js
 fi
