@@ -42,7 +42,7 @@ addProxy' proxy = do
 removeProxy' :: ID -> Update Database ()
 removeProxy' id = do
   Database proxies <- get
-  put . Database $ filter ((== id) . fst) proxies
+  put . Database $ filter ((/= id) . fst) proxies
 
 getProxies' :: Query Database [(ID, Proxy)]
 getProxies' = do
