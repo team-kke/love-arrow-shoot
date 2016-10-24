@@ -44,10 +44,10 @@ removeProxy' id = do
   Database proxies <- get
   put . Database $ filter ((== id) . fst) proxies
 
-getProxies' :: Query Database [Proxy]
+getProxies' :: Query Database [(ID, Proxy)]
 getProxies' = do
   Database proxies <- ask
-  return $ map snd $ sortBy (\x y -> compare (fst x) (fst y)) proxies
+  return $ sortBy (\x y -> compare (fst x) (fst y)) proxies
 
 $(makeAcidic ''Database ['addProxy', 'removeProxy', 'getProxies'])
 
@@ -67,6 +67,6 @@ removeProxy :: ID -> IO ()
 removeProxy id = withAcidState $ \acid ->
   update acid (RemoveProxy' id)
 
-getProxies :: IO [Proxy]
+getProxies :: IO [(ID, Proxy)]
 getProxies = withAcidState $ \acid ->
   query acid GetProxies'
