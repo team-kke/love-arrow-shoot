@@ -35,6 +35,7 @@ PureScript:
 
 ```
 $ npm i
+$ bower i
 $ ./pulpw build
 $ ./pulpw watch
 ```
