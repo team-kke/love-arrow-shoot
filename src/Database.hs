@@ -14,6 +14,7 @@ import Option (database)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
 import Data.Acid
+import Data.Acid.Local (createCheckpointAndClose)
 import Data.ByteString (ByteString)
 import Data.List (sortBy)
 import Data.SafeCopy
@@ -50,22 +51,22 @@ getProxies' = do
 
 $(makeAcidic ''Database ['addProxy', 'removeProxy', 'getProxies'])
 
-acidState :: IO (AcidState Database)
-acidState = do
+withAcidState :: (AcidState Database -> IO a) -> IO a
+withAcidState f = do
   dir <- database
-  openLocalStateFrom dir (Database [])
+  acid <- openLocalStateFrom dir (Database [])
+  result <- f acid
+  createCheckpointAndClose acid
+  return result
 
 addProxy :: Proxy -> IO ()
-addProxy proxy = do
-  acid <- acidState
+addProxy proxy = withAcidState $ \acid ->
   update acid (AddProxy' proxy)
 
 removeProxy :: ID -> IO ()
-removeProxy id = do
-  acid <- acidState
+removeProxy id = withAcidState $ \acid ->
   update acid (RemoveProxy' id)
 
 getProxies :: IO [Proxy]
-getProxies = do
-  acid <- acidState
+getProxies = withAcidState $ \acid ->
   query acid GetProxies'
