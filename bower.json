@@ -1,4 +1,5 @@
 {
+  "name": "love-arrow-shoot",
   "ignore": [
     "**/.*",
     "node_modules",
