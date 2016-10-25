@@ -20,23 +20,22 @@ import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.List (sortBy)
 import Data.SafeCopy
-import Data.Text (Text)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 
-data Proxy = Proxy { pathPattern :: Text
+data Proxy = Proxy { pathPattern :: ByteString
                    , proxyHost :: ByteString
                    , proxyPort :: Int
                    } deriving Show
 
 instance ToJSON Proxy where
-  toJSON proxy = object [ "pathPattern" .= pathPattern proxy
+  toJSON proxy = object [ "pathPattern" .= decodeUtf8 (pathPattern proxy)
                         , "proxyHost" .= decodeUtf8 (proxyHost proxy)
                         , "proxyPort" .= proxyPort proxy
                         ]
 
 instance FromJSON Proxy where
   parseJSON = withObject "Proxy" $ \obj ->
-    Proxy <$> obj .: "pathPattern"
+    Proxy <$> (encodeUtf8 <$> obj .: "pathPattern")
           <*> (encodeUtf8 <$> obj .: "proxyHost")
           <*> obj .: "proxyPort"
 
