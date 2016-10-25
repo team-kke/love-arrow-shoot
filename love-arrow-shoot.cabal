@@ -39,6 +39,7 @@ library
                      , text
                      , mtl
                      , aeson
+                     , regex-posix
   default-language:    Haskell2010
 
 executable love-arrow-shoot
