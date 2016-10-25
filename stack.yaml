@@ -3,10 +3,6 @@ resolver: lts-7.4
 packages:
 - '.'
 
-extra-deps:
-- wai-route-0.3.1.1
-- wai-routing-0.13.0
-
-flags: {}
+extra-deps: []
 
 extra-package-dbs: []
