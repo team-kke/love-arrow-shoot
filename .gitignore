@@ -1,4 +1,4 @@
-Haskell
+# Haskell
 dist
 dist-*
 cabal-dev
@@ -26,3 +26,7 @@ node_modules
 .pulp-output
 .psci*
 src/.webpack.js
+
+# Generated
+db
+static/main.js
