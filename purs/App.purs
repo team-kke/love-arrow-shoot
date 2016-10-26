@@ -6,18 +6,21 @@ module App
 
 import Prelude
 
-import Data.Array (length)
+import Data.Maybe (Maybe(..))
 import Halogen
 import Halogen.HTML.Indexed as H
-import Halogen.HTML.Properties.Indexed as P
 import Proxy (Proxy(..))
 
 type State = Array Proxy
 
-data Query a = DoNothing a
+data Query a = Initialize a
 
 app :: forall g. Component State Query g
-app = component { render, eval }
+app = lifecycleComponent { render
+                         , eval
+                         , initializer: Just (action Initialize)
+                         , finalizer: Nothing
+                         }
   where
 
   render :: State -> ComponentHTML Query
@@ -28,7 +31,7 @@ app = component { render, eval }
       ]
 
   eval :: Query ~> ComponentDSL State Query g
-  eval (DoNothing next) = pure next
+  eval (Initialize next) = pure next
 
 proxyEl :: Proxy -> ComponentHTML Query
 proxyEl _ = H.div_ []
