@@ -13,7 +13,7 @@ newtype Proxy = Proxy { pathPattern :: String
 
 instance showProxy :: Show Proxy where
   show (Proxy {pathPattern, proxyHost, proxyPort}) =
-    "(Proxy " <> pathPattern <> " -> " <> proxyHost <> ":" <> show proxyPort
+    "(Proxy " <> pathPattern <> " -> " <> proxyHost <> ":" <> show proxyPort <> ")"
 
 instance proxyIsForeign :: IsForeign Proxy where
   read value = map Proxy $ { pathPattern: _, proxyHost: _, proxyPort: _ }
