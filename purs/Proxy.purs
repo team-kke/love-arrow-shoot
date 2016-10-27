@@ -4,20 +4,19 @@ module Proxy
 
 import Prelude
 
-import Data.Generic (class Generic)
-import Data.Foreign.Class (class IsForeign)
-import Data.Foreign.Generic (readGeneric, defaultOptions)
+import Data.Foreign.Class (class IsForeign, readProp)
 
 data Proxy = Proxy { pathPattern :: String
                    , proxyHost :: String
                    , proxyPort :: Int
                    }
 
-derive instance genericProxy :: Generic Proxy
-
 instance showProxy :: Show Proxy where
   show (Proxy {pathPattern, proxyHost, proxyPort}) =
     "(Proxy " <> pathPattern <> " -> " <> proxyHost <> ":" <> show proxyPort
 
 instance proxyIsForeign :: IsForeign Proxy where
-  read = readGeneric defaultOptions
+  read value = map Proxy $ { pathPattern: _, proxyHost: _, proxyPort: _ }
+                             <$> readProp "pathPattern" value
+                             <*> readProp "proxyHost" value
+                             <*> readProp "proxyPort" value
