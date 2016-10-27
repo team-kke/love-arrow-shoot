@@ -6,10 +6,10 @@ import Prelude
 
 import Data.Foreign.Class (class IsForeign, readProp)
 
-data Proxy = Proxy { pathPattern :: String
-                   , proxyHost :: String
-                   , proxyPort :: Int
-                   }
+newtype Proxy = Proxy { pathPattern :: String
+                      , proxyHost :: String
+                      , proxyPort :: Int
+                      }
 
 instance showProxy :: Show Proxy where
   show (Proxy {pathPattern, proxyHost, proxyPort}) =
