@@ -7,8 +7,8 @@ module App
 import Prelude
 
 import Data.Maybe (Maybe(..))
+import Element as E
 import Halogen
-import Halogen.HTML.Indexed as H
 import Proxy (Proxy(..))
 
 type State = Array Proxy
@@ -25,13 +25,11 @@ app = lifecycleComponent { render
 
   render :: State -> ComponentHTML Query
   render proxies =
-    H.div_
-      [ H.h1_ [ H.text "love-arrow-shoot" ]
-      , H.div_ (map proxyEl proxies)
+    E.container
+      [ E.heading "love-arrow-shoot"
+      , E.umi
+      , E.proxyTable proxies
       ]
 
   eval :: Query ~> ComponentDSL State Query g
   eval (Initialize next) = pure next
-
-proxyEl :: Proxy -> ComponentHTML Query
-proxyEl _ = H.div_ []
