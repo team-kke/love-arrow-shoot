@@ -1,5 +1,8 @@
 module Proxy
   ( Proxy (..)
+  , IdentifiedProxy (..)
+  , getId
+  , getProxy
   ) where
 
 import Prelude
@@ -20,3 +23,18 @@ instance proxyIsForeign :: IsForeign Proxy where
                              <$> readProp "pathPattern" value
                              <*> readProp "proxyHost" value
                              <*> readProp "proxyPort" value
+
+newtype IdentifiedProxy = IdentifiedProxy { id :: Int
+                                          , proxy :: Proxy
+                                          }
+
+instance identifiedProxyIsForeign :: IsForeign IdentifiedProxy where
+  read value = map IdentifiedProxy $ { id: _, proxy: _ }
+                                       <$> readProp "id" value
+                                       <*> readProp "proxy" value
+
+getId :: IdentifiedProxy -> Int
+getId (IdentifiedProxy x) = x.id
+
+getProxy :: IdentifiedProxy -> Proxy
+getProxy (IdentifiedProxy x) = x.proxy

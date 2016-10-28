@@ -5,7 +5,7 @@ import Prelude
 import Halogen
 import Halogen.HTML.Indexed as H
 import Halogen.HTML.Properties.Indexed as P
-import Proxy (Proxy(..))
+import Proxy
 
 c :: forall r i. String -> P.IProp (class :: P.I | r) i
 c = P.class_ <<< H.className
@@ -19,8 +19,23 @@ umi = H.img [P.src "https://cloud.githubusercontent.com/assets/1013641/19418188/
 heading :: forall p a. String -> HTML p a
 heading title = H.div [c "heading"] [H.h1 [c "title"] [H.text title]]
 
-proxyTable :: forall p a. Array Proxy -> HTML p a
-proxyTable xs = H.div_ [] -- FIXME
+proxyTable :: forall p a. Array IdentifiedProxy -> HTML p a
+proxyTable xs = H.div [c "container"]
+                  [ H.table [c "table"]
+                    [ H.thead_
+                      [ H.tr_
+                        [ H.th_ [H.text "From (regexp)"]
+                        , H.th_ [H.text "To (hostname:port)"]
+                        , H.th_ [H.text ""]
+                        ]
+                      ]
+                    , H.tbody_ (map proxyTr xs)
+                    ]
+                  ]
 
-proxy :: forall p a. Proxy -> HTML p a
-proxy _ = H.div_ [] -- FIXME
+proxyTr :: forall p a. IdentifiedProxy -> HTML p a
+proxyTr (IdentifiedProxy { id, proxy: (Proxy x) }) =
+  H.tr_ [ H.td_ [H.text x.pathPattern]
+        , H.td_ [H.text $ x.proxyHost <> ":" <> show x.proxyPort]
+        , H.td_ [H.a [c "button is-danger is-small"] [H.text "delete"]]
+        ]

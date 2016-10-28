@@ -8,7 +8,8 @@
   ],
   "dependencies": {
     "purescript-console": "^1.0.0",
-    "purescript-halogen": "^0.11.0"
+    "purescript-halogen": "^0.11.0",
+    "purescript-affjax": "^2.0.1"
   },
   "devDependencies": {
     "purescript-psci-support": "^1.0.0"
