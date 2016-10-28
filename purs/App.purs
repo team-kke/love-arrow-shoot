@@ -37,6 +37,7 @@ app = lifecycleComponent { render
       [ E.heading "love-arrow-shoot"
       , E.umi
       , E.proxyTable proxies
+      , E.form
       ]
 
   eval :: Query ~> ComponentDSL State Query (Aff (AppEffects eff))
