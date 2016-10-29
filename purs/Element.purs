@@ -5,6 +5,8 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Halogen
 import Halogen.HTML.Indexed as H
+import Halogen.HTML.Events.Indexed as E
+import Halogen.HTML.Events.Handler as EH
 import Halogen.HTML.Properties.Indexed as P
 import Proxy
 
@@ -45,19 +47,32 @@ proxyTr (IdedProxy { id, proxy: (Proxy x) }) =
         , H.td_ [H.a [c "button is-danger is-small"] [H.text "delete"]]
         ]
 
-input :: forall p a. String -> String -> HTML p a
-input name placeholder =
+input :: forall p a. String -> (String -> Action a) -> String -> HTML p a
+input value update placeholder =
   H.p [c "control is-expanded"]
-    [ H.input [c "input", P.name name, P.placeholder placeholder] ]
+    [ H.input
+        [ c "input"
+        , P.value value
+        , E.onValueChange (E.input update)
+        , P.placeholder placeholder
+        ]
+    ]
 
-form :: forall p a. HTML p a
-form = H.div [c "container"]
-         [ H.label [c "label"] [H.text "New proxy"]
-         , H.div [c "control is-grouped"]
-             [ input "pathPattern" "/test/.+"
-             , H.p [c "control", style "line-height:32px"] [H.text "→"]
-             , input "proxyHost" "example.com"
-             , input "proxyPort" "8080"
-             , H.p [c "control"] [H.a [c "button is-primary"] [H.text "add"]]
-             ]
-         ]
+form :: forall p a. ProxyForm -> (String -> String -> Action a) -> Action a -> HTML p a
+form form update action =
+  H.form [c "container", E.onSubmit (defaultPrevented action)]
+    [ H.label [c "label"] [H.text "New proxy"]
+    , H.div [c "control is-grouped"]
+        [ input form.pathPattern (update "pathPattern") "/test/.+"
+        , H.p [c "control", style "line-height:32px"] [H.text "→"]
+        , input form.proxyHost (update "proxyHost") "example.com"
+        , input form.proxyPort (update "proxyPort") "8080"
+        , H.p [c "control"]
+            [ H.button [c "button is-primary"] [H.text "add"]
+            ]
+        ]
+    ]
+  where
+  defaultPrevented action e = do
+    EH.preventDefault
+    E.input_ action e

@@ -10,7 +10,10 @@
     "purescript-console": "^1.0.0",
     "purescript-halogen": "^0.11.0",
     "purescript-affjax": "^2.0.1",
-    "purescript-argonaut-codecs": "1.1.0"
+    "purescript-argonaut-codecs": "1.1.0",
+    "purescript-maps": "1.1",
+    "purescript-integers": "1.0.0",
+    "purescript-maybe": "1.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^1.0.0"

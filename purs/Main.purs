@@ -4,11 +4,16 @@ import Prelude
 
 import App (app, State, AppEffects)
 import Control.Monad.Eff (Eff)
-import Halogen (runUI, HalogenEffects)
+import Halogen (runUI)
 import Halogen.Util (runHalogenAff, awaitBody)
 
 initialState :: State
-initialState = []
+initialState = { proxies: []
+               , form: { pathPattern: ""
+                       , proxyHost: ""
+                       , proxyPort: ""
+                       }
+               }
 
 main :: Eff (AppEffects ()) Unit
 main = runHalogenAff do

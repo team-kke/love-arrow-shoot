@@ -15,11 +15,15 @@ import Data.Maybe (Maybe(..))
 import Element as E
 import Halogen
 import Proxy
-import Network.HTTP.Affjax (AJAX, get)
+import Network.HTTP.Affjax (AJAX, get, post_)
 
-type State = Array IdedProxy
+type State = { proxies :: Array IdedProxy
+             , form :: ProxyForm
+             }
 
 data Query a = Reload a
+             | UpdateForm String String a
+             | AddProxy a
 
 type AppEffects eff = HalogenEffects (ajax :: AJAX | eff)
 
@@ -32,24 +36,42 @@ app = lifecycleComponent { render
   where
 
   render :: State -> ComponentHTML Query
-  render proxies =
+  render state =
     E.container
       [ E.heading "love-arrow-shoot"
       , E.umi
-      , E.proxyTable proxies
-      , E.form
+      , E.proxyTable state.proxies
+      , E.form state.form UpdateForm AddProxy
       ]
 
   eval :: Query ~> ComponentDSL State Query (Aff (AppEffects eff))
   eval (Reload next) = do
     proxies <- fromAff fetchProxies
-    set proxies
+    modify (_ { proxies = proxies })
     pure next
+  eval (UpdateForm field value next) = do
+    case field of
+      "pathPattern" ->
+        modify \ state -> state { form = state.form { pathPattern = value } }
+      "proxyHost" ->
+        modify \ state -> state { form = state.form { proxyHost = value } }
+      "proxyPort" ->
+        modify \ state -> state { form = state.form { proxyPort = value } }
+      _ -> pure unit
+    pure next
+  eval (AddProxy next) = do
+    form <- gets _.form
+    fromAff $ addProxy (fromProxyForm form)
+    modify (_ { form = { pathPattern: "", proxyHost: "", proxyPort: "" } })
+    eval (Reload next)
 
-
-fetchProxies :: forall eff. Aff (ajax :: AJAX | eff) State
+fetchProxies :: forall eff. Aff (ajax :: AJAX | eff) (Array IdedProxy)
 fetchProxies = do
   result <- get "/__setting__/api/"
   pure case decodeJson result.response of
-    Right state -> state
+    Right idedProxies -> idedProxies
     Left _ -> []
+
+addProxy :: forall eff. Proxy -> Aff (ajax :: AJAX | eff) Unit
+addProxy proxy =
+  post_ "/__setting__/api/" (encodeJson proxy) $> unit
