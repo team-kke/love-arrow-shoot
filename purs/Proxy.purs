@@ -3,8 +3,6 @@ module Proxy
   , IdedProxy (..)
   , ProxyForm
   , fromProxyForm
-  , getId
-  , getProxy
   ) where
 
 import Prelude
@@ -60,9 +58,3 @@ fromProxyForm f = Proxy { pathPattern: f.pathPattern
                         , proxyHost: f.proxyHost
                         , proxyPort: fromMaybe 80 (fromString f.proxyPort)
                         }
-
-getId :: IdedProxy -> Int
-getId (IdedProxy x) = x.id
-
-getProxy :: IdedProxy -> Proxy
-getProxy (IdedProxy x) = x.proxy
