@@ -16,6 +16,10 @@ An introduction to love-arrow-shoot can be found in [wiki](https://github.com/te
 *As you may already have noticed, love-arrow-shoot shouldn't be used
 in production for security and performance reason.*
 
+## Screenshot
+
+![screenshot](https://cloud.githubusercontent.com/assets/1013641/19827604/4a834210-9deb-11e6-84ab-c70370cd329b.png)
+
 ## How to use
 
 Run:
