@@ -58,8 +58,8 @@ input value update placeholder =
         ]
     ]
 
-form :: forall p a. ProxyForm -> (String -> String -> Action a) -> Action a -> HTML p a
-form form update action =
+proxyForm :: forall p a. ProxyForm -> (String -> String -> Action a) -> Action a -> HTML p a
+proxyForm form update action =
   H.form [c "container", E.onSubmit (defaultPrevented action)]
     [ H.label [c "label"] [H.text "New proxy"]
     , H.div [c "control is-grouped"]

@@ -14,8 +14,8 @@ import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Element as E
 import Halogen
-import Proxy
-import Network.HTTP.Affjax (AJAX, get, post_)
+import Proxy (Proxy, IdedProxy, ProxyForm, fromProxyForm)
+import Network.HTTP.Affjax as Afx
 
 type State = { proxies :: Array IdedProxy
              , form :: ProxyForm
@@ -25,7 +25,7 @@ data Query a = Reload a
              | UpdateForm String String a
              | AddProxy a
 
-type AppEffects eff = HalogenEffects (ajax :: AJAX | eff)
+type AppEffects eff = HalogenEffects (ajax :: Afx.AJAX | eff)
 
 app :: forall eff. Component State Query (Aff (AppEffects eff))
 app = lifecycleComponent { render
@@ -41,7 +41,7 @@ app = lifecycleComponent { render
       [ E.heading "love-arrow-shoot"
       , E.umi
       , E.proxyTable state.proxies
-      , E.form state.form UpdateForm AddProxy
+      , E.proxyForm state.form UpdateForm AddProxy
       ]
 
   eval :: Query ~> ComponentDSL State Query (Aff (AppEffects eff))
@@ -65,13 +65,13 @@ app = lifecycleComponent { render
     modify (_ { form = { pathPattern: "", proxyHost: "", proxyPort: "" } })
     eval (Reload next)
 
-fetchProxies :: forall eff. Aff (ajax :: AJAX | eff) (Array IdedProxy)
+fetchProxies :: forall eff. Aff (ajax :: Afx.AJAX | eff) (Array IdedProxy)
 fetchProxies = do
-  result <- get "/__setting__/api/"
+  result <- Afx.get "/__setting__/api/"
   pure case decodeJson result.response of
     Right idedProxies -> idedProxies
     Left _ -> []
 
-addProxy :: forall eff. Proxy -> Aff (ajax :: AJAX | eff) Unit
+addProxy :: forall eff. Proxy -> Aff (ajax :: Afx.AJAX | eff) Unit
 addProxy proxy =
-  post_ "/__setting__/api/" (encodeJson proxy) $> unit
+  Afx.post_ "/__setting__/api/" (encodeJson proxy) $> unit
