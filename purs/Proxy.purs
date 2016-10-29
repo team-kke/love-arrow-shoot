@@ -1,13 +1,13 @@
 module Proxy
   ( Proxy (..)
-  , IdentifiedProxy (..)
+  , IdedProxy (..)
   , getId
   , getProxy
   ) where
 
 import Prelude
 
-import Data.Foreign.Class (class IsForeign, readProp)
+import Data.Argonaut.Decode (class DecodeJson, decodeJson, (.?))
 
 newtype Proxy = Proxy { pathPattern :: String
                       , proxyHost :: String
@@ -18,23 +18,27 @@ instance showProxy :: Show Proxy where
   show (Proxy {pathPattern, proxyHost, proxyPort}) =
     "(Proxy " <> pathPattern <> " -> " <> proxyHost <> ":" <> show proxyPort <> ")"
 
-instance proxyIsForeign :: IsForeign Proxy where
-  read value = map Proxy $ { pathPattern: _, proxyHost: _, proxyPort: _ }
-                             <$> readProp "pathPattern" value
-                             <*> readProp "proxyHost" value
-                             <*> readProp "proxyPort" value
+instance decodeJsonProxy :: DecodeJson Proxy where
+  decodeJson json = do
+    j <- decodeJson json
+    pathPattern <- j .? "pathPattern"
+    proxyHost <- j .? "proxyHost"
+    proxyPort <- j .? "proxyPort"
+    pure $ Proxy { pathPattern, proxyHost, proxyPort }
 
-newtype IdentifiedProxy = IdentifiedProxy { id :: Int
-                                          , proxy :: Proxy
-                                          }
+newtype IdedProxy = IdedProxy { id :: Int
+                              , proxy :: Proxy
+                              }
 
-instance identifiedProxyIsForeign :: IsForeign IdentifiedProxy where
-  read value = map IdentifiedProxy $ { id: _, proxy: _ }
-                                       <$> readProp "id" value
-                                       <*> readProp "proxy" value
+instance decodeJsonIdedProxy :: DecodeJson IdedProxy where
+  decodeJson json = do
+    j <- decodeJson json
+    id <- j .? "id"
+    proxy <- j .? "proxy"
+    pure $ IdedProxy { id, proxy }
 
-getId :: IdentifiedProxy -> Int
-getId (IdentifiedProxy x) = x.id
+getId :: IdedProxy -> Int
+getId (IdedProxy x) = x.id
 
-getProxy :: IdentifiedProxy -> Proxy
-getProxy (IdentifiedProxy x) = x.proxy
+getProxy :: IdedProxy -> Proxy
+getProxy (IdedProxy x) = x.proxy

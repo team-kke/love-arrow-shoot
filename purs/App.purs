@@ -8,16 +8,16 @@ module App
 import Prelude
 
 import Control.Monad.Aff (Aff)
+import Data.Argonaut.Decode (decodeJson)
+import Data.Argonaut.Encode (encodeJson)
 import Data.Either (Either(..))
-import Data.Foreign.Class (readJSON)
 import Data.Maybe (Maybe(..))
 import Element as E
 import Halogen
 import Proxy
 import Network.HTTP.Affjax (AJAX, get)
 
-type State = Array IdentifiedProxy
-
+type State = Array IdedProxy
 
 data Query a = Reload a
 
@@ -50,6 +50,6 @@ app = lifecycleComponent { render
 fetchProxies :: forall eff. Aff (ajax :: AJAX | eff) State
 fetchProxies = do
   result <- get "/__setting__/api/"
-  pure case readJSON result.response of
+  pure case decodeJson result.response of
     Right state -> state
     Left _ -> []
