@@ -24,6 +24,7 @@ type State = { proxies :: Array IdedProxy
 data Query a = Reload a
              | UpdateForm String String a
              | AddProxy a
+             | RemoveProxy Int a
 
 type AppEffects eff = HalogenEffects (ajax :: Afx.AJAX | eff)
 
@@ -40,7 +41,7 @@ app = lifecycleComponent { render
     E.container
       [ E.heading "love-arrow-shoot"
       , E.umi
-      , E.proxyTable state.proxies
+      , E.proxyTable state.proxies RemoveProxy
       , E.proxyForm state.form UpdateForm AddProxy
       ]
 
@@ -64,6 +65,9 @@ app = lifecycleComponent { render
     fromAff $ addProxy (fromProxyForm form)
     modify (_ { form = { pathPattern: "", proxyHost: "", proxyPort: "" } })
     eval (Reload next)
+  eval (RemoveProxy id next) = do
+    fromAff $ removeProxy id
+    eval (Reload next)
 
 fetchProxies :: forall eff. Aff (ajax :: Afx.AJAX | eff) (Array IdedProxy)
 fetchProxies = do
@@ -75,3 +79,7 @@ fetchProxies = do
 addProxy :: forall eff. Proxy -> Aff (ajax :: Afx.AJAX | eff) Unit
 addProxy proxy =
   Afx.post_ "/__setting__/api/" (encodeJson proxy) $> unit
+
+removeProxy :: forall eff. Int -> Aff (ajax :: Afx.AJAX | eff) Unit
+removeProxy id =
+  Afx.delete_ ("/__setting__/api/?id=" <> show id) $> unit

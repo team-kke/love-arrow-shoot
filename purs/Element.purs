@@ -25,26 +25,33 @@ umi = H.img [P.src "https://cloud.githubusercontent.com/assets/1013641/19418188/
 heading :: forall p a. String -> HTML p a
 heading title = H.div [c "heading"] [H.h1 [c "title"] [H.text title]]
 
-proxyTable :: forall p a. Array IdedProxy -> HTML p a
-proxyTable xs = H.div [c "container", style "margin-top:20px"]
-                  [ H.label [c "label"] [H.text "Running Proxies"]
-                  , H.table [c "table"]
-                    [ H.thead_
-                      [ H.tr_
-                        [ H.th_ [H.text "From (regexp)"]
-                        , H.th_ [H.text "To (hostname:port)"]
-                        , H.th_ [H.text ""]
-                        ]
-                      ]
-                    , H.tbody_ (map proxyTr xs)
-                    ]
-                  ]
+proxyTable :: forall p a. Array IdedProxy -> (Int -> Action a) -> HTML p a
+proxyTable xs remove =
+  H.div [c "container", style "margin-top:20px"]
+    [ H.label [c "label"] [H.text "Running Proxies"]
+    , H.table [c "table"]
+        [ H.thead_
+            [ H.tr_
+                [ H.th_ [H.text "From (regexp)"]
+                , H.th_ [H.text "To (hostname:port)"]
+                , H.th_ [H.text ""]
+                ]
+            ]
+        , H.tbody_ (map (proxyTr remove) xs)
+        ]
+    ]
 
-proxyTr :: forall p a. IdedProxy -> HTML p a
-proxyTr (IdedProxy { id, proxy: (Proxy x) }) =
+proxyTr :: forall p a. (Int -> Action a) -> IdedProxy -> HTML p a
+proxyTr remove (IdedProxy { id, proxy: (Proxy x) }) =
   H.tr_ [ H.td_ [H.text x.pathPattern]
         , H.td_ [H.text $ x.proxyHost <> ":" <> show x.proxyPort]
-        , H.td_ [H.a [c "button is-danger is-small"] [H.text "delete"]]
+        , H.td_
+            [ H.a
+                [ c "button is-danger is-small"
+                , E.onClick (E.input_ (remove id))
+                ]
+                [ H.text "delete" ]
+            ]
         ]
 
 input :: forall p a. String -> (String -> Action a) -> String -> HTML p a
